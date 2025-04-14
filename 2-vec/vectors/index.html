@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    #canvas-container {
+      display: flex;
+      justify-content: center;
+    }
+    .controls {
+      max-width: 800px;
+      margin: 20px auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .control-group {
+      margin-bottom: 15px;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .formula {
+      background-color: #f1f1f1;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      margin: 10px 0;
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+    }
+    .slider-container label {
+      width: 80px;
+    }
+    .slider-container input[type="range"] {
+      flex-grow: 1;
+      margin: 0 10px;
+    }
+    .slider-container input[type="number"] {
+      width: 60px;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e9f5ff;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Vector Operations Explorer</h1>
+  <p>This interactive tool allows you to explore vector operations like modulus (length) and dot product (inner product), which are fundamental concepts from Week 2 of the Mathematics for ML course.</p>
+  
+  <div id="canvas-container"></div>
+  
+  <div class="controls">
+    <div class="control-group">
+      <h2>Vector A</h2>
+      <div class="slider-container">
+        <label for="vecAx">x:</label>
+        <input type="range" id="vecAx" min="-5" max="5" value="2" step="0.1">
+        <input type="number" id="vecAxValue" value="2" min="-5" max="5" step="0.1">
+      </div>
+      <div class="slider-container">
+        <label for="vecAy">y:</label>
+        <input type="range" id="vecAy" min="-5" max="5" value="3" step="0.1">
+        <input type="number" id="vecAyValue" value="3" min="-5" max="5" step="0.1">
+      </div>
+    </div>
+    
+    <div class="control-group">
+      <h2>Vector B</h2>
+      <div class="slider-container">
+        <label for="vecBx">x:</label>
+        <input type="range" id="vecBx" min="-5" max="5" value="4" step="0.1">
+        <input type="number" id="vecBxValue" value="4" min="-5" max="5" step="0.1">
+      </div>
+      <div class="slider-container">
+        <label for="vecBy">y:</label>
+        <input type="range" id="vecBy" min="-5" max="5" value="-1" step="0.1">
+        <input type="number" id="vecByValue" value="-1" min="-5" max="5" step="0.1">
+      </div>
+    </div>
+    
+    <div class="output" id="vector-info">
+      <div id="vector-a-info"></div>
+      <div id="vector-b-info"></div>
+      <div id="operations-info"></div>
+    </div>
+  </div>
+  
+  <div class="controls">
+    <h2>Key Formulas</h2>
+    <p>The formulas used in this visualization are:</p>
+    <div class="formula">
+      <strong>Modulus (Length):</strong> |v| = √(x² + y²)
+    </div>
+    <div class="formula">
+      <strong>Dot Product:</strong> A · B = A_x * B_x + A_y * B_y
+    </div>
+    <div class="formula">
+      <strong>Angle between vectors:</strong> cos(θ) = (A · B) / (|A| * |B|)
+    </div>
+    <div class="formula">
+      <strong>Scalar Projection:</strong> proj_A(B) = (A · B) / |A|
+    </div>
+    <div class="formula">
+      <strong>Vector Projection:</strong> proj_A(B) = ((A · B) / (A · A)) * A
+    </div>
+  </div>
+
+  <script>
+    function setup() {
+      const canvas = createCanvas(600, 400);
+      canvas.parent('canvas-container');
+      
+      // Link sliders to number inputs
+      document.getElementById('vecAx').addEventListener('input', function() {
+        document.getElementById('vecAxValue').value = this.value;
+        updateVectors();
+      });
+      document.getElementById('vecAy').addEventListener('input', function() {
+        document.getElementById('vecAyValue').value = this.value;
+        updateVectors();
+      });
+      document.getElementById('vecBx').addEventListener('input', function() {
+        document.getElementById('vecBxValue').value = this.value;
+        updateVectors();
+      });
+      document.getElementById('vecBy').addEventListener('input', function() {
+        document.getElementById('vecByValue').value = this.value;
+        updateVectors();
+      });
+      
+      // Link number inputs to sliders
+      document.getElementById('vecAxValue').addEventListener('input', function() {
+        document.getElementById('vecAx').value = this.value;
+        updateVectors();
+      });
+      document.getElementById('vecAyValue').addEventListener('input', function() {
+        document.getElementById('vecAy').value = this.value;
+        updateVectors();
+      });
+      document.getElementById('vecBxValue').addEventListener('input', function() {
+        document.getElementById('vecBx').value = this.value;
+        updateVectors();
+      });
+      document.getElementById('vecByValue').addEventListener('input', function() {
+        document.getElementById('vecBy').value = this.value;
+        updateVectors();
+      });
+      
+      // Initial update
+      updateVectors();
+    }
+    
+    function draw() {
+      background(255);
+      
+      // Set up the coordinate system with origin at center
+      translate(width / 2, height / 2);
+      
+      // Draw grid
+      drawGrid();
+      
+      // Get vector values
+      let vecA = createVector(
+        parseFloat(document.getElementById('vecAx').value),
+        parseFloat(document.getElementById('vecAy').value)
+      );
+      
+      let vecB = createVector(
+        parseFloat(document.getElementById('vecBx').value),
+        parseFloat(document.getElementById('vecBy').value)
+      );
+      
+      // Draw vectors
+      drawVector(vecA, color(220, 50, 50), "A");
+      drawVector(vecB, color(50, 50, 220), "B");
+      
+      // Draw the projection of B onto A
+      drawProjection(vecA, vecB);
+      
+      // Update vector information
+      updateVectorInfo(vecA, vecB);
+    }
+    
+    function drawGrid() {
+      stroke(200);
+      strokeWeight(1);
+      
+      // Scale factor (50 pixels = 1 unit)
+      const scale = 50;
+      
+      // Draw grid lines
+      for (let x = -width/2; x <= width/2; x += scale) {
+        line(x, -height/2, x, height/2);
+      }
+      for (let y = -height/2; y <= height/2; y += scale) {
+        line(-width/2, y, width/2, y);
+      }
+      
+      // Draw axes
+      stroke(100);
+      strokeWeight(2);
+      line(-width/2, 0, width/2, 0);
+      line(0, -height/2, 0, height/2);
+      
+      // Add ticks with numbers
+      textSize(12);
+      textAlign(CENTER, CENTER);
+      fill(100);
+      for (let x = -5; x <= 5; x++) {
+        if (x !== 0) {
+          text(x, x * scale, 20);
+        }
+      }
+      for (let y = -4; y <= 4; y++) {
+        if (y !== 0) {
+          text(-y, -20, y * scale);
+        }
+      }
+      
+      // Origin
+      text("0", -10, 20);
+    }
+    
+    function drawVector(v, color, label) {
+      const scale = 50; // 50 pixels = 1 unit
+      
+      push();
+      stroke(color);
+      strokeWeight(3);
+      fill(color);
+      
+      // Draw the vector line
+      line(0, 0, v.x * scale, -v.y * scale);
+      
+      // Draw the arrowhead
+      let arrowSize = 10;
+      translate(v.x * scale, -v.y * scale);
+      let angle = atan2(-v.y, v.x);
+      rotate(angle);
+      triangle(0, 0, -arrowSize, arrowSize/2, -arrowSize, -arrowSize/2);
+      
+      // Add label
+      rotate(-angle);
+      textSize(16);
+      text(label, 15, -15);
+      
+      pop();
+    }
+    
+    function drawProjection(vecA, vecB) {
+      const scale = 50; // 50 pixels = 1 unit
+      
+      // Calculate the dot product
+      let dotProduct = vecA.x * vecB.x + vecA.y * vecB.y;
+      
+      // Calculate the scalar projection of B onto A
+      let scalarProj = dotProduct / vecA.mag();
+      
+      // Calculate the vector projection of B onto A
+      let vecProj = p5.Vector.mult(vecA, dotProduct / (vecA.magSq()));
+      
+      // Draw the projection line (from origin to projection point)
+      push();
+      stroke(100, 180, 100);
+      strokeWeight(3);
+      line(0, 0, vecProj.x * scale, -vecProj.y * scale);
+      
+      // Draw the orthogonal line (from B to projection)
+      stroke(180, 100, 180);
+      strokeWeight(2);
+      line(vecB.x * scale, -vecB.y * scale, vecProj.x * scale, -vecProj.y * scale);
+      
+      // Label the projection
+      fill(100, 180, 100);
+      textSize(14);
+      text("proj", vecProj.x * scale / 2, -vecProj.y * scale / 2 - 10);
+      
+      pop();
+    }
+    
+    function updateVectors() {
+      // This function just triggers a redraw
+      redraw();
+    }
+    
+    function updateVectorInfo(vecA, vecB) {
+      // Calculate various vector properties
+      let magA = vecA.mag();
+      let magB = vecB.mag();
+      let dotProduct = vecA.x * vecB.x + vecA.y * vecB.y;
+      
+      // Calculate the angle between vectors (in degrees)
+      let angle = acos(constrain(dotProduct / (magA * magB), -1, 1)) * 180 / PI;
+      
+      // Calculate projections
+      let scalarProj = dotProduct / magA;
+      let vectorProj = p5.Vector.mult(vecA, dotProduct / (vecA.magSq()));
+      
+      // Update the HTML elements with the calculated values
+      document.getElementById('vector-a-info').innerHTML = 
+        `<strong>Vector A:</strong> (${vecA.x.toFixed(1)}, ${vecA.y.toFixed(1)}) | 
+         Modulus: |A| = ${magA.toFixed(2)}`;
+      
+      document.getElementById('vector-b-info').innerHTML = 
+        `<strong>Vector B:</strong> (${vecB.x.toFixed(1)}, ${vecB.y.toFixed(1)}) | 
+         Modulus: |B| = ${magB.toFixed(2)}`;
+      
+      document.getElementById('operations-info').innerHTML = 
+        `<strong>Dot Product:</strong> A · B = ${dotProduct.toFixed(2)}<br>
+         <strong>Angle between vectors:</strong> ${angle.toFixed(1)}° ${angle < 90 ? '(acute)' : angle > 90 ? '(obtuse)' : '(right angle)'}<br>
+         <strong>Scalar Projection of B onto A:</strong> ${scalarProj.toFixed(2)}<br>
+         <strong>Vector Projection of B onto A:</strong> (${vectorProj.x.toFixed(2)}, ${vectorProj.y.toFixed(2)})`;
+    }
+  </script>
+</body>
+</html>
