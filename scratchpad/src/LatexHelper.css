@@ -1,0 +1,131 @@
+.latex-helper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 400px;
+  max-height: 500px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.helper-toggle-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #3498db;
+  color: white;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.helper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.helper-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.helper-header button {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #777;
+}
+
+.helper-content {
+  padding: 15px;
+}
+
+.templates-section,
+.symbols-section {
+  margin-bottom: 20px;
+}
+
+.templates-section h4,
+.symbols-section h4,
+.symbol-category h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.template-button {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.template-button:hover {
+  background-color: #e9ecef;
+}
+
+.symbol-category {
+  margin-bottom: 15px;
+}
+
+.symbols-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+}
+
+.symbol-button {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.symbol-button:hover {
+  background-color: #e9ecef;
+}
+
+@media (max-width: 500px) {
+  .latex-helper {
+    width: 90%;
+    left: 5%;
+    right: 5%;
+  }
+  
+  .symbols-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}

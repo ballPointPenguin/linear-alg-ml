@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    #canvas-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .panel {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .flex-container {
+      display: flex;
+      gap: 20px;
+    }
+    .col {
+      flex: 1;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+    .formula {
+      background-color: #f1f1f1;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      margin: 10px 0;
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+    }
+    .slider-container label {
+      width: 80px;
+    }
+    .slider-container input[type="range"] {
+      flex-grow: 1;
+      margin: 0 10px;
+    }
+    .slider-container input[type="number"] {
+      width: 60px;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e9f5ff;
+      border-radius: 4px;
+    }
+    .code-block {
+      background-color: #f1f1f1;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: monospace;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    .btn {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .explanation {
+      line-height: 1.6;
+    }
+    .key-point {
+      font-weight: bold;
+      color: #375a7f;
+    }
+    .toggle-group {
+      display: flex;
+      margin: 10px 0;
+      gap: 10px;
+    }
+    .toggle-btn {
+      padding: 8px 15px;
+      border: 1px solid #ddd;
+      background-color: #f1f1f1;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .toggle-btn.active {
+      background-color: #4CAF50;
+      color: white;
+      border-color: #4CAF50;
+    }
+    .visualization-settings {
+      margin: 15px 0;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+    }
+    .checkbox-container input {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Vector Projection Explorer</h1>
+    <p>This interactive tool demonstrates how vector projections work, a fundamental concept in linear algebra where we find how much of one vector extends in the direction of another.</p>
+    
+    <div class="panel">
+      <h2>Vector Visualization</h2>
+      <div id="canvas-container"></div>
+      
+      <div class="visualization-settings">
+        <h3>Visualization Options</h3>
+        <div class="toggle-group">
+          <button id="toggleBasic" class="toggle-btn active">Basic Projection</button>
+          <button id="toggleDecomposition" class="toggle-btn">Vector Decomposition</button>
+          <button id="toggleTriangle" class="toggle-btn">Right Triangle View</button>
+        </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="showComponents" checked>
+          <label for="showComponents">Show Vector Components</label>
+        </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="showCalculations" checked>
+          <label for="showCalculations">Show Calculations on Canvas</label>
+        </div>
+      </div>
+      
+      <div class="flex-container">
+        <div class="col">
+          <h3>Vector A (Red)</h3>
+          <div class="slider-container">
+            <label for="vecAx">x:</label>
+            <input type="range" id="vecAx" min="-5" max="5" value="3" step="0.1">
+            <input type="number" id="vecAxValue" value="3" min="-5" max="5" step="0.1">
+          </div>
+          <div class="slider-container">
+            <label for="vecAy">y:</label>
+            <input type="range" id="vecAy" min="-5" max="5" value="1" step="0.1">
+            <input type="number" id="vecAyValue" value="1" min="-5" max="5" step="0.1">
+          </div>
+        </div>
+        
+        <div class="col">
+          <h3>Vector B (Blue)</h3>
+          <div class="slider-container">
+            <label for="vecBx">x:</label>
+            <input type="range" id="vecBx" min="-5" max="5" value="4" step="0.1">
+            <input type="number" id="vecBxValue" value="4" min="-5" max="5" step="0.1">
+          </div>
+          <div class="slider-container">
+            <label for="vecBy">y:</label>
+            <input type="range" id="vecBy" min="-5" max="5" value="2" step="0.1">
+            <input type="number" id="vecByValue" value="2" min="-5" max="5" step="0.1">
+          </div>
+        </div>
+      </div>
+      
+      <div class="output" id="vector-info">
+        <h3>Calculations</h3>
+        <div id="vector-a-info"></div>
+        <div id="vector-b-info"></div>
+        <div id="operations-info"></div>
+      </div>
+    </div>
+    
+    <div class="panel">
+      <h2>Understanding Vector Projections</h2>
+      
+      <div class="flex-container">
+        <div class="col">
+          <h3>Scalar Projection</h3>
+          <p>The scalar projection of vector B onto vector A is the length of the shadow that B casts on A.</p>
+          <div class="formula">
+            scalar_proj = (A·B) / |A|
+          </div>
+          <p>This represents how far along vector A the projected component extends.</p>
+        </div>
+        
+        <div class="col">
+          <h3>Vector Projection</h3>
+          <p>The vector projection gives us the actual vector along A's direction that represents B's influence in that direction.</p>
+          <div class="formula">
+            vector_proj = ((A·B) / (A·A)) × A
+          </div>
+          <p>This is equivalent to multiplying a unit vector in A's direction by the scalar projection.</p>
+        </div>
+      </div>
+      
+      <h3>Key Concepts</h3>
+      <ul>
+        <li><span class="key-point">Orthogonal Decomposition:</span> Any vector B can be broken into a component parallel to A (the projection) and a component orthogonal to A.</li>
+        <li><span class="key-point">Minimizing Distance:</span> The vector projection represents the closest point on A's span to the tip of B.</li>
+        <li><span class="key-point">Dot Product Relationship:</span> The dot product A·B equals |A| times the scalar projection.</li>
+        <li><span class="key-point">Orthogonality:</span> When vectors are perpendicular, the projection becomes zero.</li>
+      </ul>
+    </div>
+    
+    <div class="panel">
+      <h2>Applications of Vector Projections</h2>
+      <div class="flex-container">
+        <div class="col">
+          <h3>In Machine Learning</h3>
+          <ul>
+            <li><strong>Feature Projection:</strong> Projecting data onto principal components in PCA</li>
+            <li><strong>Dimensionality Reduction:</strong> Finding lower-dimensional representations of data</li>
+            <li><strong>Orthogonalization:</strong> Creating independent features from correlated ones</li>
+          </ul>
+        </div>
+        
+        <div class="col">
+          <h3>In Physics and Engineering</h3>
+          <ul>
+            <li><strong>Force Decomposition:</strong> Breaking forces into components along different axes</li>
+            <li><strong>Work Calculations:</strong> Finding the component of force in the direction of movement</li>
+            <li><strong>Signal Processing:</strong> Decomposing signals into orthogonal components</li>
+          </ul>
+        </div>
+      </div>
+      
+      <h3>Code Implementation:</h3>
+      <div class="code-block">// JavaScript/p5.js implementation
+function scalarProjection(a, b) {
+  // Projection of b onto a
+  return (a.x * b.x + a.y * b.y) / a.mag();
+}
+
+function vectorProjection(a, b) {
+  // Get scalar projection first
+  let dotProduct = a.x * b.x + a.y * b.y;
+  let scalarProj = dotProduct / (a.x * a.x + a.y * a.y);
+  
+  // Multiply direction of a by scalar projection
+  return createVector(a.x * scalarProj, a.y * scalarProj);
+}
+
+// Python/NumPy implementation
+import numpy as np
+
+def scalar_projection(a, b):
+    # Projection of b onto a
+    return np.dot(a, b) / np.linalg.norm(a)
+
+def vector_projection(a, b):
+    # Projection of b onto a
+    return (np.dot(a, b) / np.dot(a, a)) * a</div>
+    </div>
+  </div>
+
+  <script>
+    // Visualization mode
+    let visualizationMode = 'basic'; // 'basic', 'decomposition', or 'triangle'
+    let showComponents = true;
+    let showCalculations = true;
+    
+    // Set up main sketch
+    function setup() {
+      const canvas = createCanvas(600, 400);
+      canvas.parent('canvas-container');
+      
+      // Link sliders to number inputs for Vector A
+      document.getElementById('vecAx').addEventListener('input', function() {
+        document.getElementById('vecAxValue').value = this.value;
+        updateVectors();
+      });
+      document.getElementById('vecAy').addEventListener('input', function() {
+        document.getElementById('vecAyValue').value = this.value;
+        updateVectors();
+      });
+      
+      // Link number inputs to sliders for Vector A
+      document.getElementById('vecAxValue').addEventListener('input', function() {
+        document.getElementById('vecAx').value = this.value;
+        updateVectors();
+      });
+      document.getElementById('vecAyValue').addEventListener('input', function() {
+        document.getElementById('vecAy').value = this.value;
+        updateVectors();
+      });
+      
+      // Link sliders to number inputs for Vector B
+      document.getElementById('vecBx').addEventListener('input', function() {
+        document.getElementById('vecBxValue').value = this.value;
+        updateVectors();
+      });
+      document.getElementById('vecBy').addEventListener('input', function() {
+        document.getElementById('vecByValue').value = this.value;
+        updateVectors();
+      });
+      
+      // Link number inputs to sliders for Vector B
+      document.getElementById('vecBxValue').addEventListener('input', function() {
+        document.getElementById('vecBx').value = this.value;
+        updateVectors();
+      });
+      document.getElementById('vecByValue').addEventListener('input', function() {
+        document.getElementById('vecBy').value = this.value;
+        updateVectors();
+      });
+      
+      // Visualization mode toggles
+      document.getElementById('toggleBasic').addEventListener('click', function() {
+        visualizationMode = 'basic';
+        updateToggleButtons();
+        updateVectors();
+      });
+      
+      document.getElementById('toggleDecomposition').addEventListener('click', function() {
+        visualizationMode = 'decomposition';
+        updateToggleButtons();
+        updateVectors();
+      });
+      
+      document.getElementById('toggleTriangle').addEventListener('click', function() {
+        visualizationMode = 'triangle';
+        updateToggleButtons();
+        updateVectors();
+      });
+      
+      // Component visibility checkbox
+      document.getElementById('showComponents').addEventListener('change', function() {
+        showComponents = this.checked;
+        updateVectors();
+      });
+      
+      // Calculations visibility checkbox
+      document.getElementById('showCalculations').addEventListener('change', function() {
+        showCalculations = this.checked;
+        updateVectors();
+      });
+      
+      // Initial update
+      updateVectors();
+    }
+    
+    function updateToggleButtons() {
+      // Reset all buttons
+      document.getElementById('toggleBasic').classList.remove('active');
+      document.getElementById('toggleDecomposition').classList.remove('active');
+      document.getElementById('toggleTriangle').classList.remove('active');
+      
+      // Activate the selected button
+      if (visualizationMode === 'basic') {
+        document.getElementById('toggleBasic').classList.add('active');
+      } else if (visualizationMode === 'decomposition') {
+        document.getElementById('toggleDecomposition').classList.add('active');
+      } else if (visualizationMode === 'triangle') {
+        document.getElementById('toggleTriangle').classList.add('active');
+      }
+    }
+    
+    function draw() {
+      background(255);
+      
+      // Set up the coordinate system with origin at center
+      translate(width / 2, height / 2);
+      
+      // Draw grid
+      drawGrid();
+      
+      // Get vector values
+      let vecA = createVector(
+        parseFloat(document.getElementById('vecAx').value),
+        parseFloat(document.getElementById('vecAy').value)
+      );
+      
+      let vecB = createVector(
+        parseFloat(document.getElementById('vecBx').value),
+        parseFloat(document.getElementById('vecBy').value)
+      );
+      
+      // Calculate the projection of B onto A
+      let projection = calculateProjection(vecA, vecB);
+      
+      // Draw different visualizations based on the mode
+      if (visualizationMode === 'basic') {
+        drawBasicProjection(vecA, vecB, projection);
+      } else if (visualizationMode === 'decomposition') {
+        drawVectorDecomposition(vecA, vecB, projection);
+      } else if (visualizationMode === 'triangle') {
+        drawTriangleView(vecA, vecB, projection);
+      }
+      
+      // Update vector information
+      updateVectorInfo(vecA, vecB, projection);
+    }
+    
+    function drawGrid() {
+      stroke(200);
+      strokeWeight(1);
+      
+      // Scale factor (50 pixels = 1 unit)
+      const scale = 50;
+      
+      // Draw grid lines
+      for (let x = -width/2; x <= width/2; x += scale) {
+        line(x, -height/2, x, height/2);
+      }
+      for (let y = -height/2; y <= height/2; y += scale) {
+        line(-width/2, y, width/2, y);
+      }
+      
+      // Draw axes
+      stroke(100);
+      strokeWeight(2);
+      line(-width/2, 0, width/2, 0);
+      line(0, -height/2, 0, height/2);
+      
+      // Add ticks with numbers
+      textSize(12);
+      textAlign(CENTER, CENTER);
+      fill(100);
+      for (let x = -5; x <= 5; x++) {
+        if (x !== 0) {
+          text(x, x * scale, 20);
+        }
+      }
+      for (let y = -4; y <= 4; y++) {
+        if (y !== 0) {
+          text(-y, -20, y * scale);
+        }
+      }
+      
+      // Origin
+      text("0", -10, 20);
+    }
+    
+    function drawVector(v, color, label, scale = 50) {
+      push();
+      stroke(color);
+      strokeWeight(3);
+      fill(color);
+      
+      // Draw the vector line
+      line(0, 0, v.x * scale, -v.y * scale);
+      
+      // Draw the arrowhead
+      let arrowSize = 10;
+      translate(v.x * scale, -v.y * scale);
+      let angle = atan2(-v.y, v.x);
+      rotate(angle);
+      triangle(0, 0, -arrowSize, arrowSize/2, -arrowSize, -arrowSize/2);
+      
+      // Add label
+      rotate(-angle);
+      textSize(16);
+      text(label, 15, -15);
+      
+      pop();
+    }
+    
+    function drawVectorFromPoint(start, v, color, label, scale = 50) {
+      push();
+      stroke(color);
+      strokeWeight(3);
+      fill(color);
+      
+      // Convert start point to screen coordinates
+      let startX = start.x * scale;
+      let startY = -start.y * scale;
+      
+      // End point
+      let endX = startX + v.x * scale;
+      let endY = startY - v.y * scale;
+      
+      // Draw the vector line
+      line(startX, startY, endX, endY);
+      
+      // Draw the arrowhead
+      translate(endX, endY);
+      let angle = atan2(startY - endY, endX - startX);
+      rotate(angle);
+      triangle(0, 0, -arrowSize, arrowSize/2, -arrowSize, -arrowSize/2);
+      
+      // Add label
+      rotate(-angle);
+      textSize(16);
+      text(label, 15, -15);
+      
+      pop();
+    }
+    
+    function drawDashedLine(x1, y1, x2, y2, dashLength = 5, gapLength = 5) {
+      push();
+      strokeWeight(2);
+      strokeCap(SQUARE);
+      
+      let distance = dist(x1, y1, x2, y2);
+      let dashCount = Math.floor(distance / (dashLength + gapLength));
+      let dashRemainder = distance - dashCount * (dashLength + gapLength);
+      
+      let angle = atan2(y2 - y1, x2 - x1);
+      
+      translate(x1, y1);
+      rotate(angle);
+      
+      for (let i = 0; i < dashCount; i++) {
+        line(i * (dashLength + gapLength), 0, i * (dashLength + gapLength) + dashLength, 0);
+      }
+      
+      // Draw the remainder
+      if (dashRemainder > 0) {
+        let remainderDash = min(dashRemainder, dashLength);
+        line(dashCount * (dashLength + gapLength), 0, dashCount * (dashLength + gapLength) + remainderDash, 0);
+      }
+      
+      pop();
+    }
+    
+    function calculateProjection(vecA, vecB) {
+      // Ensure vecA is not a zero vector
+      if (vecA.mag() === 0) {
+        return {
+          scalar: 0,
+          vector: createVector(0, 0),
+          orthogonal: vecB.copy()
+        };
+      }
+      
+      // Calculate dot product
+      let dotProduct = vecA.x * vecB.x + vecA.y * vecB.y;
+      
+      // Calculate scalar projection
+      let scalarProj = dotProduct / vecA.mag();
+      
+      // Calculate vector projection
+      let vecProj = p5.Vector.mult(vecA, dotProduct / vecA.magSq());
+      
+      // Calculate orthogonal component
+      let orthogonal = p5.Vector.sub(vecB, vecProj);
+      
+      return {
+        scalar: scalarProj,
+        vector: vecProj,
+        orthogonal: orthogonal
+      };
+    }
+    
+    function drawBasicProjection(vecA, vecB, projection) {
+      const scale = 50; // 50 pixels = 1 unit
+      
+      // Draw vectors
+      drawVector(vecA, color(220, 50, 50), "A");
+      drawVector(vecB, color(50, 50, 220), "B");
+      
+      // Draw the projection vector (from origin to projection point)
+      push();
+      stroke(100, 180, 100);
+      strokeWeight(3);
+      line(0, 0, projection.vector.x * scale, -projection.vector.y * scale);
+      
+      // Draw the orthogonal line (from B to projection)
+      stroke(180, 100, 180);
+      strokeWeight(2);
+      drawDashedLine(
+        vecB.x * scale, -vecB.y * scale, 
+        projection.vector.x * scale, -projection.vector.y * scale
+      );
+      
+      // Label the projection
+      fill(100, 180, 100);
+      textSize(14);
+      text("proj_A(B)", projection.vector.x * scale / 2, -projection.vector.y * scale / 2 - 10);
+      
+      // Draw right angle marker (if B and projection are not too close)
+      if (p5.Vector.dist(vecB, projection.vector) > 0.1) {
+        const rightAngleSize = 10;
+        const orthogonalDir = p5.Vector.sub(vecB, projection.vector).normalize();
+        const projDir = projection.vector.copy().normalize();
+        
+        // Calculate the point for the right angle marker
+        const rightAnglePoint = p5.Vector.add(
+          projection.vector,
+          p5.Vector.mult(orthogonalDir, rightAngleSize / scale)
+        );
+        
+        // Calculate the second point for the right angle marker
+        const secondPoint = p5.Vector.add(
+          rightAnglePoint,
+          p5.Vector.mult(projDir, rightAngleSize / scale)
+        );
+        
+        stroke(180, 100, 180);
+        strokeWeight(1);
+        line(
+          projection.vector.x * scale, -projection.vector.y * scale,
+          rightAnglePoint.x * scale, -rightAnglePoint.y * scale
+        );
+        line(
+          rightAnglePoint.x * scale, -rightAnglePoint.y * scale,
+          secondPoint.x * scale, -secondPoint.y * scale
+        );
+      }
+      
+      // Add calculations to the canvas if enabled
+      if (showCalculations) {
+        // Calculate dot product
+        let dotProduct = vecA.x * vecB.x + vecA.y * vecB.y;
+        let magA = vecA.mag();
+        
+        push();
+        fill(0);
+        textAlign(LEFT);
+        textSize(14);
+        text(`A·B = ${dotProduct.toFixed(2)}`, -width/2 + 20, -height/2 + 30);
+        text(`|A| = ${magA.toFixed(2)}`, -width/2 + 20, -height/2 + 50);
+        text(`Scalar Projection = ${projection.scalar.toFixed(2)}`, -width/2 + 20, -height/2 + 70);
+        pop();
+      }
+      
+      // Show vector components if enabled
+      if (showComponents) {
+        // A components
+        stroke(220, 50, 50, 100);
+        strokeWeight(1);
+        line(0, 0, vecA.x * scale, 0);
+        line(vecA.x * scale, 0, vecA.x * scale, -vecA.y * scale);
+        
+        // B components
+        stroke(50, 50, 220, 100);
+        strokeWeight(1);
+        line(0, 0, vecB.x * scale, 0);
+        line(vecB.x * scale, 0, vecB.x * scale, -vecB.y * scale);
+      }
+      
+      pop();
+    }
+    
+    function drawVectorDecomposition(vecA, vecB, projection) {
+      const scale = 50; // 50 pixels = 1 unit
+      
+      // Draw vectors
+      drawVector(vecA, color(220, 50, 50), "A");
+      drawVector(vecB, color(50, 50, 220), "B");
+      
+      // Draw the projection vector (parallel component)
+      push();
+      stroke(100, 180, 100);
+      strokeWeight(3);
+      line(0, 0, projection.vector.x * scale, -projection.vector.y * scale);
+      fill(100, 180, 100);
+      textSize(14);
+      text("B_∥", projection.vector.x * scale / 2, -projection.vector.y * scale / 2 - 10);
+      
+      // Draw the orthogonal component
+      stroke(180, 100, 180);
+      strokeWeight(3);
+      let orthStart = createVector(projection.vector.x, projection.vector.y);
+      line(
+        orthStart.x * scale, -orthStart.y * scale,
+        vecB.x * scale, -vecB.y * scale
+      );
+      fill(180, 100, 180);
+      textSize(14);
+      let orthMidX = (orthStart.x + vecB.x) / 2;
+      let orthMidY = (orthStart.y + vecB.y) / 2;
+      text("B_⊥", orthMidX * scale, -orthMidY * scale - 10);
+      
+      // Draw parallelogram
+      stroke(50, 50, 220, 80);
+      strokeWeight(1);
+      noFill();
+      beginShape();
+      vertex(0, 0);
+      vertex(projection.vector.x * scale, -projection.vector.y * scale);
+      vertex(vecB.x * scale, -vecB.y * scale);
+      vertex(vecB.x * scale - projection.vector.x * scale, -vecB.y * scale + projection.vector.y * scale);
+      endShape(CLOSE);
+      
+      // Draw right angle marker
+      if (p5.Vector.dist(vecB, projection.vector) > 0.1) {
+        const rightAngleSize = 10;
+        stroke(0, 0, 0, 150);
+        strokeWeight(1);
+        noFill();
+        
+        // Draw a small square indicating the right angle
+        square(
+          projection.vector.x * scale - rightAngleSize/2, 
+          -projection.vector.y * scale - rightAngleSize/2, 
+          rightAngleSize
+        );
+      }
+      
+      // Add decomposition formula to canvas if enabled
+      if (showCalculations) {
+        push();
+        fill(0);
+        textAlign(LEFT);
+        textSize(14);
+        text(`B = B_∥ + B_⊥`, -width/2 + 20, -height/2 + 30);
+        text(`B_∥ = (${projection.vector.x.toFixed(2)}, ${projection.vector.y.toFixed(2)})`, -width/2 + 20, -height/2 + 50);
+        text(`B_⊥ = (${projection.orthogonal.x.toFixed(2)}, ${projection.orthogonal.y.toFixed(2)})`, -width/2 + 20, -height/2 + 70);
+        pop();
+      }
+      
+      // Show vector components if enabled
+      if (showComponents) {
+        // A components
+        stroke(220, 50, 50, 100);
+        strokeWeight(1);
+        line(0, 0, vecA.x * scale, 0);
+        line(vecA.x * scale, 0, vecA.x * scale, -vecA.y * scale);
+        
+        // B components
+        stroke(50, 50, 220, 100);
+        strokeWeight(1);
+        line(0, 0, vecB.x * scale, 0);
+        line(vecB.x * scale, 0, vecB.x * scale, -vecB.y * scale);
+      }
+      
+      pop();
+    }
+    
+    function drawTriangleView(vecA, vecB, projection) {
+      const scale = 50; // 50 pixels = 1 unit
+      
+      // Draw vector A longer to emphasize it as a reference line
+      let extendedA = p5.Vector.mult(vecA, 2);
+      
+      // Draw extended A vector as a reference line
+      push();
+      stroke(220, 50, 50, 150);
+      strokeWeight(2);
+      line(
+        -extendedA.x * scale, extendedA.y * scale,
+        extendedA.x * scale, -extendedA.y * scale
+      );
+      
+      // Draw vectors
+      drawVector(vecA, color(220, 50, 50), "A");
+      drawVector(vecB, color(50, 50, 220), "B");
+      
+      // Draw the right triangle
+      // 1. Projection vector
+      stroke(100, 180, 100);
+      strokeWeight(3);
+      line(0, 0, projection.vector.x * scale, -projection.vector.y * scale);
+      
+      // 2. Orthogonal component
+      stroke(180, 100, 180);
+      strokeWeight(3);
+      line(
+        projection.vector.x * scale, -projection.vector.y * scale,
+        vecB.x * scale, -vecB.y * scale
+      );
+      
+      // 3. Hypotenuse (vector B)
+      stroke(50, 50, 220, 150);
+      strokeWeight(1);
+      line(0, 0, vecB.x * scale, -vecB.y * scale);
+      
+      // Draw labels
+      fill(100, 180, 100);
+      textSize(14);
+      let projMidX = projection.vector.x / 2;
+      let projMidY = projection.vector.y / 2;
+      text("Adjacent", projMidX * scale, -projMidY * scale - 10);
+      
+      fill(180, 100, 180);
+      let orthMidX = (projection.vector.x + vecB.x) / 2;
+      let orthMidY = (projection.vector.y + vecB.y) / 2;
+      text("Opposite", orthMidX * scale, -orthMidY * scale - 10);
+      
+      fill(50, 50, 220);
+      let hypMidX = vecB.x / 2;
+      let hypMidY = vecB.y / 2;
+      text("Hypotenuse", hypMidX * scale, -hypMidY * scale + 20);
+      
+      // Draw right angle marker
+      if (p5.Vector.dist(vecB, projection.vector) > 0.1) {
+        const rightAngleSize = 10;
+        stroke(0, 0, 0, 150);
+        strokeWeight(1);
+        noFill();
+        
+        // Draw a small square indicating the right angle
+        square(
+          projection.vector.x * scale - rightAngleSize/2, 
+          -projection.vector.y * scale - rightAngleSize/2, 
+          rightAngleSize
+        );
+      }
+      
+      // Add triangle measurements to canvas if enabled
+      if (showCalculations) {
+        let adjacent = projection.vector.mag();
+        let opposite = projection.orthogonal.mag();
+        let hypotenuse = vecB.mag();
+        
+        push();
+        fill(0);
+        textAlign(LEFT);
+        textSize(14);
+        text(`Adjacent = ${adjacent.toFixed(2)}`, -width/2 + 20, -height/2 + 30);
+        text(`Opposite = ${opposite.toFixed(2)}`, -width/2 + 20, -height/2 + 50);
+        text(`Hypotenuse = ${hypotenuse.toFixed(2)}`, -width/2 + 20, -height/2 + 70);
+        text(`cos(θ) = Adjacent/Hypotenuse = ${(adjacent/hypotenuse).toFixed(3)}`, -width/2 + 20, -height/2 + 90);
+        pop();
+      }
+      
+      pop();
+    }
+    
+    function updateVectors() {
+      // This function just triggers a redraw
+      redraw();
+    }
+    
+    function updateVectorInfo(vecA, vecB, projection) {
+      // Calculate various vector properties
+      let magA = vecA.mag();
+      let magB = vecB.mag();
+      let dotProduct = vecA.x * vecB.x + vecA.y * vecB.y;
+      
+      // Calculate the angle between vectors (in degrees)
+      let angleRad = 0;
+      if (magA > 0 && magB > 0) {
+        angleRad = acos(constrain(dotProduct / (magA * magB), -1, 1));
+      }
+      let angleDeg = angleRad * 180 / PI;
+      
+      // Update the HTML elements with the calculated values
+      document.getElementById('vector-a-info').innerHTML = 
+        `<strong>Vector A:</strong> (${vecA.x.toFixed(1)}, ${vecA.y.toFixed(1)}) | 
+         Modulus: |A| = ${magA.toFixed(2)}`;
+      
+      document.getElementById('vector-b-info').innerHTML = 
+        `<strong>Vector B:</strong> (${vecB.x.toFixed(1)}, ${vecB.y.toFixed(1)}) | 
+         Modulus: |B| = ${magB.toFixed(2)}`;
+      
+      document.getElementById('operations-info').innerHTML = 
+        `<strong>Dot Product:</strong> A · B = ${dotProduct.toFixed(2)}<br>
+         <strong>Angle between vectors:</strong> ${angleDeg.toFixed(1)}°<br>
+         <strong>Scalar Projection:</strong> proj<sub>A</sub>B = (A·B) / |A| = ${projection.scalar.toFixed(2)}<br>
+         <strong>Vector Projection:</strong> proj<sub>A</sub>B = ((A·B) / (A·A)) × A = (${projection.vector.x.toFixed(2)}, ${projection.vector.y.toFixed(2)})<br>
+         <strong>Orthogonal Component:</strong> B - proj<sub>A</sub>B = (${projection.orthogonal.x.toFixed(2)}, ${projection.orthogonal.y.toFixed(2)})`;
+    }
+  </script>
+</body>
+</html>

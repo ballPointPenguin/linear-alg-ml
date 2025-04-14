@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.5.0/math.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    #canvas-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .panel {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .flex-container {
+      display: flex;
+      gap: 20px;
+    }
+    .col {
+      flex: 1;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+    .formula {
+      background-color: #f1f1f1;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      margin: 10px 0;
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+    }
+    .slider-container label {
+      width: 80px;
+    }
+    .slider-container input[type="range"] {
+      flex-grow: 1;
+      margin: 0 10px;
+    }
+    .slider-container input[type="number"] {
+      width: 60px;
+    }
+    .angle-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e9f5ff;
+      border-radius: 4px;
+    }
+    .cosine-graph {
+      width: 100%;
+      height: 200px;
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      margin-top: 10px;
+    }
+    .code-block {
+      background-color: #f1f1f1;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: monospace;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    .btn {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .explanation {
+      line-height: 1.6;
+    }
+    .key-point {
+      font-weight: bold;
+      color: #375a7f;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cosine and Dot Product Relationship Explorer</h1>
+    <p>This interactive tool demonstrates the relationship between the dot product of two vectors and the cosine of the angle between them: <code>A·B = |A|·|B|·cos(θ)</code></p>
+    
+    <div class="panel">
+      <h2>Vector Visualization</h2>
+      <div id="canvas-container"></div>
+      
+      <div class="flex-container">
+        <div class="col">
+          <h3>Vector A (Red)</h3>
+          <div class="slider-container">
+            <label for="vecAx">x:</label>
+            <input type="range" id="vecAx" min="-5" max="5" value="3" step="0.1">
+            <input type="number" id="vecAxValue" value="3" min="-5" max="5" step="0.1">
+          </div>
+          <div class="slider-container">
+            <label for="vecAy">y:</label>
+            <input type="range" id="vecAy" min="-5" max="5" value="0" step="0.1">
+            <input type="number" id="vecAyValue" value="0" min="-5" max="5" step="0.1">
+          </div>
+        </div>
+        
+        <div class="col">
+          <h3>Vector B (Blue)</h3>
+          <div class="slider-container">
+            <label for="vecBx">x:</label>
+            <input type="range" id="vecBx" min="-5" max="5" value="2" step="0.1">
+            <input type="number" id="vecBxValue" value="2" min="-5" max="5" step="0.1">
+          </div>
+          <div class="slider-container">
+            <label for="vecBy">y:</label>
+            <input type="range" id="vecBy" min="-5" max="5" value="2" step="0.1">
+            <input type="number" id="vecByValue" value="2" min="-5" max="5" step="0.1">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Angle control -->
+      <div class="angle-control">
+        <h3>Angle Between Vectors:</h3>
+        <input type="range" id="angleSlider" min="0" max="180" value="45" step="1">
+        <input type="number" id="angleValue" value="45" min="0" max="180" step="1">°
+        <button id="lockAngleBtn" class="btn">Lock Angle</button>
+      </div>
+      
+      <div class="output" id="vector-info">
+        <h3>Calculations</h3>
+        <div id="vector-a-info"></div>
+        <div id="vector-b-info"></div>
+        <div id="operations-info"></div>
+      </div>
+    </div>
+    
+    <div class="panel">
+      <h2>Cosine Function and Dot Product</h2>
+      <p>The graph below shows the relationship between the angle (θ) and cos(θ). As you adjust vectors above, watch how the dot product changes with the cosine value.</p>
+      <div id="cosine-graph-container"></div>
+      
+      <div class="explanation">
+        <h3>Key Insights:</h3>
+        <ul>
+          <li><span class="key-point">When vectors are parallel (θ = 0°):</span> cos(θ) = 1, and the dot product is maximized (|A|·|B|)</li>
+          <li><span class="key-point">When vectors are perpendicular (θ = 90°):</span> cos(θ) = 0, and the dot product is 0</li>
+          <li><span class="key-point">When vectors point in opposite directions (θ = 180°):</span> cos(θ) = -1, and the dot product is negative (-|A|·|B|)</li>
+        </ul>
+        
+        <h3>Mathematical Foundation:</h3>
+        <p>The relationship derives from the Law of Cosines for a triangle:</p>
+        <div class="formula">c² = a² + b² - 2ab·cos(C)</div>
+        <p>When applied to vectors, this becomes:</p>
+        <div class="formula">|A-B|² = |A|² + |B|² - 2|A||B|·cos(θ)</div>
+        <p>Which leads to the dot product formula:</p>
+        <div class="formula">A·B = |A|·|B|·cos(θ)</div>
+      </div>
+    </div>
+    
+    <div class="panel">
+      <h2>Practical Applications</h2>
+      <p>Understanding the relationship between the dot product and cosine has many practical applications:</p>
+      <ul>
+        <li><strong>Similarity Measurement:</strong> In machine learning, the cosine similarity between feature vectors indicates how similar two data points are</li>
+        <li><strong>Work in Physics:</strong> Work = Force · Displacement = |F|·|d|·cos(θ)</li>
+        <li><strong>Computer Graphics:</strong> Calculating lighting effects based on the angle of light hitting a surface</li>
+        <li><strong>Querying High-Dimensional Spaces:</strong> Finding similar documents or images in information retrieval</li>
+      </ul>
+      
+      <h3>Code Implementation:</h3>
+      <div class="code-block">// JavaScript/p5.js implementation
+function dotProduct(v1, v2) {
+  return v1.x * v2.x + v1.y * v2.y;
+}
+
+function calculateAngle(v1, v2) {
+  let dot = dotProduct(v1, v2);
+  let mag1 = v1.mag();
+  let mag2 = v2.mag();
+  return acos(constrain(dot / (mag1 * mag2), -1, 1));
+}
+
+// Python/NumPy implementation
+import numpy as np
+
+def dot_product(v1, v2):
+    return np.dot(v1, v2)
+
+def calculate_angle(v1, v2):
+    dot = dot_product(v1, v2)
+    mag1 = np.linalg.norm(v1)
+    mag2 = np.linalg.norm(v2)
+    return np.arccos(np.clip(dot / (mag1 * mag2), -1.0, 1.0))</div>
+    </div>
+  </div>
+
+  <script>
+    let angleIsLocked = false;
+    let cosineGraphSketch;
+    
+    // Set up main sketch
+    function setup() {
+      const canvas = createCanvas(600, 400);
+      canvas.parent('canvas-container');
+      
+      // Link sliders to number inputs for Vector A
+      document.getElementById('vecAx').addEventListener('input', function() {
+        document.getElementById('vecAxValue').value = this.value;
+        if (!angleIsLocked) {
+          updateVectors();
+        } else {
+          maintainAngleForVectorB();
+        }
+      });
+      document.getElementById('vecAy').addEventListener('input', function() {
+        document.getElementById('vecAyValue').value = this.value;
+        if (!angleIsLocked) {
+          updateVectors();
+        } else {
+          maintainAngleForVectorB();
+        }
+      });
+      
+      // Link number inputs to sliders for Vector A
+      document.getElementById('vecAxValue').addEventListener('input', function() {
+        document.getElementById('vecAx').value = this.value;
+        if (!angleIsLocked) {
+          updateVectors();
+        } else {
+          maintainAngleForVectorB();
+        }
+      });
+      document.getElementById('vecAyValue').addEventListener('input', function() {
+        document.getElementById('vecAy').value = this.value;
+        if (!angleIsLocked) {
+          updateVectors();
+        } else {
+          maintainAngleForVectorB();
+        }
+      });
+      
+      // Link sliders to number inputs for Vector B
+      document.getElementById('vecBx').addEventListener('input', function() {
+        document.getElementById('vecBxValue').value = this.value;
+        if (!angleIsLocked) {
+          updateVectors();
+        } else {
+          maintainAngleWithVectorA();
+        }
+      });
+      document.getElementById('vecBy').addEventListener('input', function() {
+        document.getElementById('vecByValue').value = this.value;
+        if (!angleIsLocked) {
+          updateVectors();
+        } else {
+          maintainAngleWithVectorA();
+        }
+      });
+      
+      // Link number inputs to sliders for Vector B
+      document.getElementById('vecBxValue').addEventListener('input', function() {
+        document.getElementById('vecBx').value = this.value;
+        if (!angleIsLocked) {
+          updateVectors();
+        } else {
+          maintainAngleWithVectorA();
+        }
+      });
+      document.getElementById('vecByValue').addEventListener('input', function() {
+        document.getElementById('vecBy').value = this.value;
+        if (!angleIsLocked) {
+          updateVectors();
+        } else {
+          maintainAngleWithVectorA();
+        }
+      });
+      
+      // Angle slider
+      document.getElementById('angleSlider').addEventListener('input', function() {
+        document.getElementById('angleValue').value = this.value;
+        if (angleIsLocked) {
+          adjustVectorsToMatchAngle(parseFloat(this.value));
+        }
+      });
+      
+      // Angle input
+      document.getElementById('angleValue').addEventListener('input', function() {
+        document.getElementById('angleSlider').value = this.value;
+        if (angleIsLocked) {
+          adjustVectorsToMatchAngle(parseFloat(this.value));
+        }
+      });
+      
+      // Lock angle button
+      document.getElementById('lockAngleBtn').addEventListener('click', function() {
+        angleIsLocked = !angleIsLocked;
+        this.textContent = angleIsLocked ? "Unlock Angle" : "Lock Angle";
+        this.style.backgroundColor = angleIsLocked ? "#d9534f" : "#4CAF50";
+        
+        if (angleIsLocked) {
+          let vecA = createVector(
+            parseFloat(document.getElementById('vecAx').value),
+            parseFloat(document.getElementById('vecAy').value)
+          );
+          
+          let vecB = createVector(
+            parseFloat(document.getElementById('vecBx').value),
+            parseFloat(document.getElementById('vecBy').value)
+          );
+          
+          let angle = calculateAngle(vecA, vecB) * 180 / PI;
+          document.getElementById('angleSlider').value = angle;
+          document.getElementById('angleValue').value = angle.toFixed(0);
+        }
+      });
+      
+      // Set up the cosine graph
+      setupCosineGraph();
+      
+      // Initial update
+      updateVectors();
+    }
+    
+    function draw() {
+      background(255);
+      
+      // Set up the coordinate system with origin at center
+      translate(width / 2, height / 2);
+      
+      // Draw grid
+      drawGrid();
+      
+      // Get vector values
+      let vecA = createVector(
+        parseFloat(document.getElementById('vecAx').value),
+        parseFloat(document.getElementById('vecAy').value)
+      );
+      
+      let vecB = createVector(
+        parseFloat(document.getElementById('vecBx').value),
+        parseFloat(document.getElementById('vecBy').value)
+      );
+      
+      // Draw the angle arc
+      drawAngleArc(vecA, vecB);
+      
+      // Draw vectors
+      drawVector(vecA, color(220, 50, 50), "A");
+      drawVector(vecB, color(50, 50, 220), "B");
+      
+      // Update vector information
+      updateVectorInfo(vecA, vecB);
+      
+      // Update cosine graph marker position
+      if (cosineGraphSketch) {
+        let angle = calculateAngle(vecA, vecB) * 180 / PI;
+        cosineGraphSketch.updateMarker(angle);
+      }
+    }
+    
+    function drawGrid() {
+      stroke(200);
+      strokeWeight(1);
+      
+      // Scale factor (50 pixels = 1 unit)
+      const scale = 50;
+      
+      // Draw grid lines
+      for (let x = -width/2; x <= width/2; x += scale) {
+        line(x, -height/2, x, height/2);
+      }
+      for (let y = -height/2; y <= height/2; y += scale) {
+        line(-width/2, y, width/2, y);
+      }
+      
+      // Draw axes
+      stroke(100);
+      strokeWeight(2);
+      line(-width/2, 0, width/2, 0);
+      line(0, -height/2, 0, height/2);
+      
+      // Add ticks with numbers
+      textSize(12);
+      textAlign(CENTER, CENTER);
+      fill(100);
+      for (let x = -5; x <= 5; x++) {
+        if (x !== 0) {
+          text(x, x * scale, 20);
+        }
+      }
+      for (let y = -4; y <= 4; y++) {
+        if (y !== 0) {
+          text(-y, -20, y * scale);
+        }
+      }
+      
+      // Origin
+      text("0", -10, 20);
+    }
+    
+    function drawVector(v, color, label) {
+      const scale = 50; // 50 pixels = 1 unit
+      
+      push();
+      stroke(color);
+      strokeWeight(3);
+      fill(color);
+      
+      // Draw the vector line
+      line(0, 0, v.x * scale, -v.y * scale);
+      
+      // Draw the arrowhead
+      let arrowSize = 10;
+      translate(v.x * scale, -v.y * scale);
+      let angle = atan2(-v.y, v.x);
+      rotate(angle);
+      triangle(0, 0, -arrowSize, arrowSize/2, -arrowSize, -arrowSize/2);
+      
+      // Add label
+      rotate(-angle);
+      textSize(16);
+      text(label, 15, -15);
+      
+      pop();
+    }
+    
+    function drawAngleArc(v1, v2) {
+      const scale = 50;
+      const arcRadius = 40;
+      const v1Mag = v1.mag();
+      const v2Mag = v2.mag();
+      
+      if (v1Mag === 0 || v2Mag === 0) return; // Skip if either vector is zero
+      
+      push();
+      noFill();
+      stroke(100, 100, 100);
+      strokeWeight(2);
+      
+      // Calculate the angle between vectors
+      let angle1 = atan2(-v1.y, v1.x);
+      let angle2 = atan2(-v2.y, v2.x);
+      
+      // Ensure we draw the smaller angle between vectors
+      let angleDiff = angle2 - angle1;
+      if (angleDiff > PI) angleDiff -= TWO_PI;
+      if (angleDiff < -PI) angleDiff += TWO_PI;
+      
+      // Draw the arc
+      arc(0, 0, arcRadius, arcRadius, angle1, angle1 + angleDiff);
+      
+      // Label the angle
+      let midAngle = angle1 + angleDiff / 2;
+      let labelX = (arcRadius + 10) * cos(midAngle);
+      let labelY = -(arcRadius + 10) * sin(midAngle);
+      
+      fill(100);
+      textSize(14);
+      text("θ", labelX, labelY);
+      
+      pop();
+    }
+    
+    function calculateAngle(v1, v2) {
+      let dotProduct = v1.x * v2.x + v1.y * v2.y;
+      let mag1 = v1.mag();
+      let mag2 = v2.mag();
+      
+      if (mag1 === 0 || mag2 === 0) return 0;
+      
+      return acos(constrain(dotProduct / (mag1 * mag2), -1, 1));
+    }
+    
+    function updateVectors() {
+      // This function just triggers a redraw
+      redraw();
+    }
+    
+    function updateVectorInfo(vecA, vecB) {
+      // Calculate various vector properties
+      let magA = vecA.mag();
+      let magB = vecB.mag();
+      let dotProduct = vecA.x * vecB.x + vecA.y * vecB.y;
+      
+      // Calculate the angle between vectors (in degrees)
+      let angleRad = calculateAngle(vecA, vecB);
+      let angleDeg = angleRad * 180 / PI;
+      
+      // Cosine of the angle
+      let cosAngle = cos(angleRad);
+      
+      // Expected dot product from the formula |A|·|B|·cos(θ)
+      let expectedDot = magA * magB * cosAngle;
+      
+      // Update the HTML elements with the calculated values
+      document.getElementById('vector-a-info').innerHTML = 
+        `<strong>Vector A:</strong> (${vecA.x.toFixed(1)}, ${vecA.y.toFixed(1)}) | 
+         Modulus: |A| = ${magA.toFixed(2)}`;
+      
+      document.getElementById('vector-b-info').innerHTML = 
+        `<strong>Vector B:</strong> (${vecB.x.toFixed(1)}, ${vecB.y.toFixed(1)}) | 
+         Modulus: |B| = ${magB.toFixed(2)}`;
+      
+      document.getElementById('operations-info').innerHTML = 
+        `<strong>Angle between vectors:</strong> ${angleDeg.toFixed(1)}° 
+        (${angleDeg < 90 ? 'acute' : angleDeg > 90 ? 'obtuse' : 'right angle'})<br>
+         <strong>Cosine of angle:</strong> cos(${angleDeg.toFixed(1)}°) = ${cosAngle.toFixed(4)}<br>
+         <strong>Dot Product:</strong> A · B = ${dotProduct.toFixed(2)}<br>
+         <strong>|A|·|B|·cos(θ):</strong> ${magA.toFixed(2)} × ${magB.toFixed(2)} × ${cosAngle.toFixed(4)} = ${expectedDot.toFixed(2)}<br><br>
+         <em>* Note that A · B = |A|·|B|·cos(θ) as shown in the formula</em>
+        `;
+        
+      // If angle is locked, update the angle slider to match the current angle
+      if (!angleIsLocked) {
+        document.getElementById('angleSlider').value = angleDeg;
+        document.getElementById('angleValue').value = angleDeg.toFixed(0);
+      }
+    }
+    
+    function maintainAngleWithVectorA() {
+      let targetAngle = parseFloat(document.getElementById('angleValue').value) * PI / 180;
+      let vecA = createVector(
+        parseFloat(document.getElementById('vecAx').value),
+        parseFloat(document.getElementById('vecAy').value)
+      );
+      
+      let vecB = createVector(
+        parseFloat(document.getElementById('vecBx').value),
+        parseFloat(document.getElementById('vecBy').value)
+      );
+      
+      // If vector A is zero, we can't maintain an angle
+      if (vecA.mag() === 0) {
+        updateVectors();
+        return;
+      }
+      
+      // Calculate current angle
+      let currentAngle = calculateAngle(vecA, vecB);
+      
+      // If current angle is close to target, no need to adjust
+      if (abs(currentAngle - targetAngle) < 0.01) {
+        updateVectors();
+        return;
+      }
+      
+      // Get the magnitude of vector B
+      let magB = vecB.mag();
+      
+      // Calculate the new vector B that maintains the target angle with A
+      // First, normalize A and rotate by the target angle
+      let unitA = p5.Vector.div(vecA, vecA.mag());
+      
+      // For 2D rotation:
+      // x' = x*cos(θ) - y*sin(θ)
+      // y' = x*sin(θ) + y*cos(θ)
+      let rotatedX = unitA.x * cos(targetAngle) - unitA.y * sin(targetAngle);
+      let rotatedY = unitA.x * sin(targetAngle) + unitA.y * cos(targetAngle);
+      
+      let newB = createVector(rotatedX, rotatedY);
+      newB.mult(magB); // Maintain the same magnitude
+      
+      // Update the B vector values
+      document.getElementById('vecBx').value = newB.x.toFixed(1);
+      document.getElementById('vecBy').value = newB.y.toFixed(1);
+      document.getElementById('vecBxValue').value = newB.x.toFixed(1);
+      document.getElementById('vecByValue').value = newB.y.toFixed(1);
+      
+      updateVectors();
+    }
+    
+    function maintainAngleForVectorB() {
+      let targetAngle = parseFloat(document.getElementById('angleValue').value) * PI / 180;
+      let vecA = createVector(
+        parseFloat(document.getElementById('vecAx').value),
+        parseFloat(document.getElementById('vecAy').value)
+      );
+      
+      let vecB = createVector(
+        parseFloat(document.getElementById('vecBx').value),
+        parseFloat(document.getElementById('vecBy').value)
+      );
+      
+      // If vector A is zero, we can't maintain an angle
+      if (vecA.mag() === 0) {
+        updateVectors();
+        return;
+      }
+      
+      // Get the magnitude of vector B
+      let magB = vecB.mag();
+      
+      // Calculate the new vector B that maintains the target angle with A
+      // First, normalize A and rotate by the target angle
+      let unitA = p5.Vector.div(vecA, vecA.mag());
+      
+      // For 2D rotation:
+      let rotatedX = unitA.x * cos(targetAngle) - unitA.y * sin(targetAngle);
+      let rotatedY = unitA.x * sin(targetAngle) + unitA.y * cos(targetAngle);
+      
+      let newB = createVector(rotatedX, rotatedY);
+      newB.mult(magB); // Maintain the same magnitude
+      
+      // Update the B vector values
+      document.getElementById('vecBx').value = newB.x.toFixed(1);
+      document.getElementById('vecBy').value = newB.y.toFixed(1);
+      document.getElementById('vecBxValue').value = newB.x.toFixed(1);
+      document.getElementById('vecByValue').value = newB.y.toFixed(1);
+      
+      updateVectors();
+    }
+    
+    function adjustVectorsToMatchAngle(angleDeg) {
+      let targetAngle = angleDeg * PI / 180;
+      let vecA = createVector(
+        parseFloat(document.getElementById('vecAx').value),
+        parseFloat(document.getElementById('vecAy').value)
+      );
+      
+      let vecB = createVector(
+        parseFloat(document.getElementById('vecBx').value),
+        parseFloat(document.getElementById('vecBy').value)
+      );
+      
+      // If vector A is zero, we can't adjust to match an angle
+      if (vecA.mag() === 0) {
+        return;
+      }
+      
+      // Get the magnitude of vector B
+      let magB = vecB.mag();
+      
+      // Calculate the new vector B that creates the target angle with A
+      // First, normalize A and rotate by the target angle
+      let unitA = p5.Vector.div(vecA, vecA.mag());
+      
+      // For 2D rotation:
+      let rotatedX = unitA.x * cos(targetAngle) - unitA.y * sin(targetAngle);
+      let rotatedY = unitA.x * sin(targetAngle) + unitA.y * cos(targetAngle);
+      
+      let newB = createVector(rotatedX, rotatedY);
+      newB.mult(magB); // Maintain the same magnitude
+      
+      // Update the B vector values
+      document.getElementById('vecBx').value = newB.x.toFixed(1);
+      document.getElementById('vecBy').value = newB.y.toFixed(1);
+      document.getElementById('vecBxValue').value = newB.x.toFixed(1);
+      document.getElementById('vecByValue').value = newB.y.toFixed(1);
+      
+      updateVectors();
+    }
+    
+    function setupCosineGraph() {
+      // Create a separate p5 instance for the cosine graph
+      const cosineGraphContainer = document.getElementById('cosine-graph-container');
+      
+      const cosineGraph = function(p) {
+        let markerPosition = 45; // Initial position (in degrees)
+        
+        p.setup = function() {
+          let canvas = p.createCanvas(cosineGraphContainer.clientWidth, 200);
+          canvas.parent(cosineGraphContainer);
+        };
+        
+        p.draw = function() {
+          p.background(248, 249, 250);
+          
+          // Set up coordinate system
+          p.translate(0, p.height / 2);
+          p.scale(1, -1); // Flip y-axis to make positive values go up
+          
+          // Draw zero line
+          p.stroke(200);
+          p.strokeWeight(1);
+          p.line(0, 0, p.width, 0);
+          
+          // Draw cosine function
+          p.stroke(70, 130, 180);
+          p.strokeWeight(2);
+          p.noFill();
+          p.beginShape();
+          for (let x = 0; x < p.width; x++) {
+            let angle = p.map(x, 0, p.width, 0, 180);
+            let y = Math.cos(angle * Math.PI / 180) * 80; // 80 is amplitude
+            p.vertex(x, y);
+          }
+          p.endShape();
+          
+          // Draw x-axis labels
+          p.push();
+          p.scale(1, -1); // Flip back for text
+          p.fill(100);
+          p.noStroke();
+          p.textAlign(p.CENTER);
+          p.textSize(12);
+          
+          p.text("0°", 0, 15);
+          p.text("45°", p.width/4, 15);
+          p.text("90°", p.width/2, 15);
+          p.text("135°", 3*p.width/4, 15);
+          p.text("180°", p.width, 15);
+          
+          // Y-axis labels
+          p.textAlign(p.RIGHT);
+          p.text("1", 25, -80);
+          p.text("0", 25, 0);
+          p.text("-1", 25, 80);
+          p.pop();
+          
+          // Draw y-axis
+          p.stroke(200);
+          p.line(0, -p.height/2, 0, p.height/2);
+          
+          // Draw marker at current angle position
+          let xPos = p.map(markerPosition, 0, 180, 0, p.width);
+          let yPos = Math.cos(markerPosition * Math.PI / 180) * 80;
+          
+          // Draw vertical line at marker position
+          p.stroke(200, 0, 0, 150);
+          p.strokeWeight(1);
+          p.line(xPos, -p.height/2, xPos, p.height/2);
+          
+          // Draw point at the cosine value
+          p.fill(200, 0, 0);
+          p.noStroke();
+          p.ellipse(xPos, yPos, 10, 10);
+          
+          // Draw cosine value label
+          p.push();
+          p.scale(1, -1); // Flip back for text
+          p.fill(200, 0, 0);
+          p.textAlign(p.LEFT);
+          p.textSize(14);
+          p.text(`cos(${markerPosition.toFixed(0)}°) = ${Math.cos(markerPosition * Math.PI / 180).toFixed(3)}`, xPos + 10, -yPos);
+          p.pop();
+        };
+        
+        p.updateMarker = function(angle) {
+          markerPosition = angle;
+        };
+      };
+      
+      cosineGraphSketch = new p5(cosineGraph);
+    }
+  </script>
+</body>
+</html>
