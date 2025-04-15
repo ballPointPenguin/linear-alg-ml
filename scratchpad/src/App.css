@@ -102,5 +102,31 @@
   
   .app {
     flex-direction: column;
+    background-color: palegoldenrod;
   }
+}
+
+.container {
+  height: calc(100vh - 100px);
+  width: 100%;
+  background-color: honeydew;
+  border-radius: 2px;
+  border: 2px solid black;
+}
+
+.sash {
+  background-color: MediumAquamarine;
+}
+
+.split-view-view {
+  padding: 0.5rem;
+}
+
+.editor-pane {
+  height: 100%;
+}
+
+.editor-pane textarea {
+  min-height: 100%;
+  min-width: 100%;
 }

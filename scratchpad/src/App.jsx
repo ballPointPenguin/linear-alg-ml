@@ -6,7 +6,9 @@ import LatexHelper from "./LatexHelper";
 import useLocalStorage from "./LocalStorageHandler";
 import MarkdownProcessor from "./MarkdownProcessor";
 import ThemeToggle from "./ThemeToggle";
+
 import "./App.css";
+import "allotment/dist/style.css";
 import "katex/dist/katex.min.css";
 
 function App() {
@@ -153,31 +155,32 @@ $$
 			{showInstructions && (
 				<Instructions onClose={() => setShowInstructions(false)} />
 			)}
-			<Allotment
-				vertical={true}
-				minSize={300}
-				defaultSize={[50, 50]}
-				style={{ height: "calc(100vh - 60px)" }}
-			>
-				<div className="editor-pane">
-					<textarea
-						ref={editorRef}
-						value={input}
-						onChange={(e) => {
-							setInput(e.target.value);
-							setSaved(false);
-						}}
-						className="editor"
-						spellCheck="false"
-						placeholder="Type your math notes here... Use $ for inline math and $$ for block math"
-					/>
-				</div>
-				<div className="preview-pane">
-					<div className="preview">
-						<MarkdownProcessor content={input} />
-					</div>
-				</div>
-			</Allotment>
+			<div className="container">
+				<Allotment defaultSizes={[40, 60]}>
+					<Allotment.Pane minSize={300}>
+						<div className="editor-pane">
+							<textarea
+								ref={editorRef}
+								value={input}
+								onChange={(e) => {
+									setInput(e.target.value);
+									setSaved(false);
+								}}
+								className="editor"
+								spellCheck="false"
+								placeholder="Type your math notes here... Use $ for inline math and $$ for block math"
+							/>
+						</div>
+					</Allotment.Pane>
+					<Allotment.Pane snap>
+						<div className="preview-pane">
+							<div className="preview">
+								<MarkdownProcessor content={input} />
+							</div>
+						</div>
+					</Allotment.Pane>
+				</Allotment>
+			</div>
 		</div>
 	);
 }
