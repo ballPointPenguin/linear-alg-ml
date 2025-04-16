@@ -1,5 +1,5 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
-import * as React from "react";
+import React from "react";
 import { BlockMath } from "./KaTeX.jsx";
 
 function sketch(p) {
