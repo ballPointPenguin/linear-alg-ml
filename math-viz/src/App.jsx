@@ -12,6 +12,7 @@ import { SineCosineInteractive } from "./components/SineCosineInteractive.jsx";
 import { TangentExplorer } from "./components/TangentExplorer.jsx";
 import { UnitCircle } from "./components/UnitCircle.jsx";
 import { VectorAddition } from "./components/VectorAddition.jsx";
+import { VectorOperations } from "./components/VectorOperations.jsx";
 
 function Home() {
 	return (
@@ -47,6 +48,7 @@ function App() {
 					<Route path="mafs-trig-functions" element={<MafsTrigFunctions />} />
 					{/* Linear Algebra */}
 					<Route path="vector-addition" element={<VectorAddition />} />
+					<Route path="vector-operations" element={<VectorOperations />} />
 					{/* Demos & Utilities */}
 					<Route path="p5-demo" element={<P5Demo />} />
 					<Route path="mafs-hello" element={<MafsHello />} />

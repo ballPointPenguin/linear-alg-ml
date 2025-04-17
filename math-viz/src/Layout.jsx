@@ -115,6 +115,16 @@ export default function Layout({ children }) {
 											Vector Addition
 										</NavLink>
 									</NavigationMenu.Link>
+									<NavigationMenu.Link asChild>
+										<NavLink
+											to="/vector-operations"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
+											Vector Operations
+										</NavLink>
+									</NavigationMenu.Link>
 								</nav>
 							</NavigationMenu.Content>
 						</NavigationMenu.Item>
