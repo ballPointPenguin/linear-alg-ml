@@ -8,6 +8,7 @@ import { SineCosineInteractive } from "./components/SineCosineInteractive.jsx";
 import { TangentExplorer } from "./components/TangentExplorer.jsx";
 import { RightTrianglePlayground } from "./components/RightTrianglePlayground.jsx";
 import { MafsHello } from "./components/MafsHello.jsx";
+import { MafsUnitCircleSine } from "./components/MafsUnitCircleSine.jsx";
 
 function Home() {
 	return (
@@ -39,6 +40,7 @@ function App() {
 				<NavLink to="/tangent-explorer">Tangent Explorer</NavLink> |{" "}
 				<NavLink to="/right-triangle-playground">Right Triangle Playground</NavLink> |{" "}
 				<NavLink to="/mafs-hello">Mafs Hello</NavLink> |{" "}
+				<NavLink to="/mafs-unit-circle-sine">Unit Circle → Sine Wave</NavLink> |{" "}
 				<NavLink to="/trig-functions">Trig Functions</NavLink>
 			</nav>
 			<Routes>
@@ -50,6 +52,7 @@ function App() {
 				<Route path="tangent-explorer" element={<TangentExplorer />} />
 				<Route path="right-triangle-playground" element={<RightTrianglePlayground />} />
 				<Route path="mafs-hello" element={<MafsHello />} />
+				<Route path="mafs-unit-circle-sine" element={<MafsUnitCircleSine />} />
 				<Route path="trig-functions" element={<TrigFunctions />} />
 			</Routes>
 		</BrowserRouter>
