@@ -22,15 +22,6 @@ function Home() {
 	);
 }
 
-function TrigFunctions() {
-	return (
-		<div>
-			<h2>Trigonometric Functions</h2>
-			<p>Review sine, cosine, tangent, and their properties.</p>
-		</div>
-	);
-}
-
 function App() {
 	return (
 		<BrowserRouter>
@@ -49,17 +40,16 @@ function App() {
 						path="right-triangle-playground"
 						element={<RightTrianglePlayground />}
 					/>
-					<Route path="mafs-hello" element={<MafsHello />} />
 					<Route
 						path="mafs-unit-circle-sine"
 						element={<MafsUnitCircleSine />}
 					/>
 					<Route path="mafs-trig-functions" element={<MafsTrigFunctions />} />
-					<Route path="trig-functions" element={<TrigFunctions />} />
 					{/* Linear Algebra */}
 					<Route path="vector-addition" element={<VectorAddition />} />
 					{/* Demos & Utilities */}
 					<Route path="p5-demo" element={<P5Demo />} />
+					<Route path="mafs-hello" element={<MafsHello />} />
 				</Routes>
 			</Layout>
 		</BrowserRouter>

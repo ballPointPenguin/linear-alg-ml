@@ -75,16 +75,6 @@ export default function Layout({ children }) {
 									</NavigationMenu.Link>
 									<NavigationMenu.Link asChild>
 										<NavLink
-											to="/mafs-hello"
-											className={({ isActive }) =>
-												isActive ? "navLink activeNavLink" : "navLink"
-											}
-										>
-											Mafs Hello
-										</NavLink>
-									</NavigationMenu.Link>
-									<NavigationMenu.Link asChild>
-										<NavLink
 											to="/mafs-unit-circle-sine"
 											className={({ isActive }) =>
 												isActive ? "navLink activeNavLink" : "navLink"
@@ -101,16 +91,6 @@ export default function Layout({ children }) {
 											}
 										>
 											Trig Functions Explorer
-										</NavLink>
-									</NavigationMenu.Link>
-									<NavigationMenu.Link asChild>
-										<NavLink
-											to="/trig-functions"
-											className={({ isActive }) =>
-												isActive ? "navLink activeNavLink" : "navLink"
-											}
-										>
-											Trig Functions (Static)
 										</NavLink>
 									</NavigationMenu.Link>
 								</nav>
@@ -155,6 +135,16 @@ export default function Layout({ children }) {
 											}
 										>
 											P5 Demo
+										</NavLink>
+									</NavigationMenu.Link>
+									<NavigationMenu.Link asChild>
+										<NavLink
+											to="/mafs-hello"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
+											Mafs Hello
 										</NavLink>
 									</NavigationMenu.Link>
 								</nav>
