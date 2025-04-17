@@ -9,4 +9,4 @@
 - [motion](https://motion.dev/docs)
 - [KaTeX](https://katex.org/docs/node)
 - [TailwindCSS](https://tailwindcss.com/docs/installation/using-vite)
-- [Kobalte](https://kobalte.dev/docs/core/overview/introduction/)
+- [Radix UI](https://www.radix-ui.com/themes/docs/overview/getting-started)

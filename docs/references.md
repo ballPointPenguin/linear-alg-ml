@@ -14,6 +14,7 @@
 - <https://immersivemath.com/ila/ch02_vectors/ch02.html>
 - <https://immersivemath.com/ila/ch03_dotproduct/ch03.html>
 - <https://immersivemath.com/ila/ch04_vectorproduct/ch04.html>
+- <https://en.wikipedia.org/wiki/Euclidean_vector#Properties_and_operations>
 
 ## Tools
 
