@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import "katex/dist/katex.min.css";
 import Layout from "./Layout.jsx";
+import CosineDotProduct from "./components/CosineDotProduct";
 import { MafsHello } from "./components/MafsHello.jsx";
 import { MafsTrigFunctions } from "./components/MafsTrigFunctions.jsx";
 import { MafsUnitCircleSine } from "./components/MafsUnitCircleSine.jsx";
@@ -49,6 +50,7 @@ function App() {
 					{/* Linear Algebra */}
 					<Route path="vector-addition" element={<VectorAddition />} />
 					<Route path="vector-operations" element={<VectorOperations />} />
+					<Route path="cosine-dot-product" element={<CosineDotProduct />} />
 					{/* Demos & Utilities */}
 					<Route path="p5-demo" element={<P5Demo />} />
 					<Route path="mafs-hello" element={<MafsHello />} />

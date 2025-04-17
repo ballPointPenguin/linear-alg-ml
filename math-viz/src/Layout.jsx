@@ -125,6 +125,16 @@ export default function Layout({ children }) {
 											Vector Operations
 										</NavLink>
 									</NavigationMenu.Link>
+									<NavigationMenu.Link asChild>
+										<NavLink
+											to="/cosine-dot-product"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
+											Cosine & Dot Product
+										</NavLink>
+									</NavigationMenu.Link>
 								</nav>
 							</NavigationMenu.Content>
 						</NavigationMenu.Item>
