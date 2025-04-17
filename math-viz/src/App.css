@@ -1,6 +1,43 @@
+/* App.css: vanilla-extract + Radix Colors theme classes */
+
+.mainBg {
+  background: var(--colors-gray1);
+  color: var(--colors-gray12);
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: var(--colors-blue1);
+  border-right: 1px solid var(--colors-blue6);
+  color: var(--colors-blue12);
+  min-height: 100vh;
+  padding: 1.5rem 1rem;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.navLink {
+  color: var(--colors-blue11);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.navLink:hover {
+  background: var(--colors-blue3);
+}
+
+.activeNavLink {
+  background: var(--colors-blue5);
+  color: var(--colors-blue12);
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
 }

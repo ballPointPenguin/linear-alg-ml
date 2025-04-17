@@ -2,18 +2,16 @@ import { CaretDownIcon } from "@radix-ui/react-icons";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { theme } from "./theme.css.ts";
+import "./App.css";
 
 export default function Layout({ children }) {
 	return (
-		<div style={{ display: "flex", minHeight: "100vh" }}>
-			<aside
-				style={{
-					width: 260,
-					background: "#f8f9fa",
-					padding: "1.5rem 1rem",
-					borderRight: "1px solid #eee",
-				}}
-			>
+		<div
+			className={`${theme} mainBg`}
+			style={{ display: "flex", minHeight: "100vh" }}
+		>
+			<aside className="sidebar">
 				<NavigationMenu.Root orientation="vertical" className="SidebarNavRoot">
 					<NavigationMenu.List className="SidebarNavList">
 						{/* Trigonometry Group */}
@@ -26,39 +24,92 @@ export default function Layout({ children }) {
 									style={{ display: "flex", flexDirection: "column", gap: 8 }}
 								>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/unit-circle">Unit Circle</NavLink>
+										<NavLink
+											to="/unit-circle"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
+											Unit Circle
+										</NavLink>
 									</NavigationMenu.Link>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/sine-cosine">Sine & Cosine</NavLink>
+										<NavLink
+											to="/sine-cosine"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
+											Sine & Cosine
+										</NavLink>
 									</NavigationMenu.Link>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/sine-cosine-interactive">
+										<NavLink
+											to="/sine-cosine-interactive"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
 											Sine & Cosine Interactive
 										</NavLink>
 									</NavigationMenu.Link>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/tangent-explorer">Tangent Explorer</NavLink>
+										<NavLink
+											to="/tangent-explorer"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
+											Tangent Explorer
+										</NavLink>
 									</NavigationMenu.Link>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/right-triangle-playground">
+										<NavLink
+											to="/right-triangle-playground"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
 											Right Triangle Playground
 										</NavLink>
 									</NavigationMenu.Link>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/mafs-hello">Mafs Hello</NavLink>
+										<NavLink
+											to="/mafs-hello"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
+											Mafs Hello
+										</NavLink>
 									</NavigationMenu.Link>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/mafs-unit-circle-sine">
+										<NavLink
+											to="/mafs-unit-circle-sine"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
 											Unit Circle → Sine Wave
 										</NavLink>
 									</NavigationMenu.Link>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/mafs-trig-functions">
+										<NavLink
+											to="/mafs-trig-functions"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
 											Trig Functions Explorer
 										</NavLink>
 									</NavigationMenu.Link>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/trig-functions">
+										<NavLink
+											to="/trig-functions"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
 											Trig Functions (Static)
 										</NavLink>
 									</NavigationMenu.Link>
@@ -75,7 +126,14 @@ export default function Layout({ children }) {
 									style={{ display: "flex", flexDirection: "column", gap: 8 }}
 								>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/vector-addition">Vector Addition</NavLink>
+										<NavLink
+											to="/vector-addition"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
+											Vector Addition
+										</NavLink>
 									</NavigationMenu.Link>
 								</nav>
 							</NavigationMenu.Content>
@@ -90,7 +148,14 @@ export default function Layout({ children }) {
 									style={{ display: "flex", flexDirection: "column", gap: 8 }}
 								>
 									<NavigationMenu.Link asChild>
-										<NavLink to="/p5-demo">P5 Demo</NavLink>
+										<NavLink
+											to="/p5-demo"
+											className={({ isActive }) =>
+												isActive ? "navLink activeNavLink" : "navLink"
+											}
+										>
+											P5 Demo
+										</NavLink>
 									</NavigationMenu.Link>
 								</nav>
 							</NavigationMenu.Content>
@@ -98,7 +163,14 @@ export default function Layout({ children }) {
 						{/* Home Link */}
 						<NavigationMenu.Item>
 							<NavigationMenu.Link asChild>
-								<NavLink to="/">Home</NavLink>
+								<NavLink
+									to="/"
+									className={({ isActive }) =>
+										isActive ? "navLink activeNavLink" : "navLink"
+									}
+								>
+									Home
+								</NavLink>
 							</NavigationMenu.Link>
 						</NavigationMenu.Item>
 					</NavigationMenu.List>
